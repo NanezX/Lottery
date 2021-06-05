@@ -2,6 +2,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts-upgradeable": "^4.1.0",
     "@openzeppelin/hardhat-upgrades": "^1.8.2",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
@@ -15,7 +16,6 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "test:forked": "hardhat test --network localhost",
-    "deploy:forked": "hardhat run scripts/deploy-script.js --network localhost",
-    "deploy:testnet": "hardhat run scripts/deploy-script.js --network testnet"
+    "deploy:forked": "hardhat run scripts/deploy-script.js --network localhost"
   }
 }
