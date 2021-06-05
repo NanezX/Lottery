@@ -24,3 +24,9 @@ yarn-error.log*
 
 .eslintcache
 yarn.lock
+
+node_modules
+
+#Hardhat files
+cache
+artifacts
