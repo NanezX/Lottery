@@ -13,6 +13,9 @@
   "scripts": {
     "clean": "hardhat clean",
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "test:forked": "hardhat test --network localhost",
+    "deploy:forked": "hardhat run scripts/deploy-script.js --network localhost",
+    "deploy:testnet": "hardhat run scripts/deploy-script.js --network testnet"
   }
 }
