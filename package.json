@@ -11,6 +11,6 @@
   "scripts": {
     "clean": "hardhat clean",
     "compile": "hardhat compile",
-    "test": "npx hardhat test"
+    "test": "hardhat test"
   }
 }
