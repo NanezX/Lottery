@@ -1,7 +1,6 @@
 const hre = require("hardhat");
 
 async function main() {
-
   const Lottery = await hre.ethers.getContractFactory("Lottery");
   const lottery = await Lottery.deploy("Hello, Hardhat!");
 
@@ -12,7 +11,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });
