@@ -9,14 +9,20 @@ import "hardhat/console.sol";
 contract Lottery is OwnableUpgradeable {
     uint fee;
     mapping(address => uint) tickets;
+    address public admin;
 
-    function initialize(uint256 _fee) public initializer {
+    event onNewSale(uint);
+    event onNewWinner(address, uint);
+
+    function initialize(uint256 _fee, address _owner) public initializer {
         fee = _fee;
+        admin = _admin
     }
 
     function buyTicket(uint amount) external {
 
     }
+
 
     function changeFee(uint _fee) external onlyOwner{
         require(_fee>=0 && _fee<10000, "ERROR: INVALID_FEE");
