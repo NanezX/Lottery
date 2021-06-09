@@ -17,9 +17,8 @@ export default function Dashboard() {
 
   return (
     <div className="app-container">
-      <h1 className="text-center mt-5">User Dashboard</h1>
-      <p>ETH Balance: {balances.ETH}</p>
-      <p>DAI Balance: {balances.DAI}</p>
+      <h1 className="text-center mt-5">Lottery Winners</h1>
+      <p>Lottery Winners: {balances.ETH}</p>
     </div>
   );
 }

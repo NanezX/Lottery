@@ -30,11 +30,6 @@ export default function Header() {
                 Dashboard
               </Link>
             </Nav.Item>
-            <Nav.Item className="mr-4">
-              <Link to="/upload" eventKey="create">
-                Upload
-              </Link>
-            </Nav.Item>
           </Nav>
         </Col>
         <Col>

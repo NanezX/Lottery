@@ -10,21 +10,18 @@ export default function Home() {
     <div className="app-container h-100">
       <Jumbotron className="home-page mt-5">
         <Container className="text-center">
-          <h1>React Dapp Starter Kit</h1>
+          <h1>Welcome to no loss lottery</h1>
+            <p> Current pot:  </p> 
+            <p> Last Winner:  </p> 
+            <p> Next Lottery raffle in:  </p> 
           {!account && (
-            <p>
               <h4 className="mt-5 text-secondary">
                 Let's start by connecting to a web3 provider!
               </h4>
-            </p>
           )}
         </Container>
       </Jumbotron>
-      <Image
-        style={{ maxWidth: "700px" }}
-        src="https://miro.medium.com/max/1024/1*JMkw9e9X4FbuJu_V5wn4fg.png"
-        fluid
-      />
+
     </div>
   );
 }
