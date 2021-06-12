@@ -29,6 +29,7 @@ describe("Lottery", function () {
         lottery = await upgrades.deployProxy(
             Lottery, 
             [
+                500, // 5%
                 VRFCoordinatorMock.address,
                 LINK_ADDRESS,
                 keyHash,

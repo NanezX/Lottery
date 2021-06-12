@@ -7,7 +7,7 @@
       "hash": "0x68a4ef66154cc09e13e69f7e70e6245314d4c1e363130183b9bb92f7601bd441",
       "type": 0,
       "accessList": null,
-      "blockHash": "0xf668d165e07bbf5780d1bd01da25b9c722860225970619ab058f2ea0f8d4ee5a",
+      "blockHash": "0x3e86955d7dc334ccb0148354ba9dc8d08f8b8d64210b20db20b9a6ef87557ac0",
       "blockNumber": 12481133,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -37,14 +37,14 @@
   "proxies": [
     {
       "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
-      "txHash": "0xad456f98a4044b86ed939a1f6c81d8aa007bff90af2a77fcabc778b10b132701",
+      "txHash": "0x6ea3a0a2fe2f16548575416c7dc8dd3de9d13d1d3104ff189f6073cab07b2565",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "373a80ff307bb9c929bf3f5851dfef545359e53fb3fba3ceed3cfcb1d87ba0bc": {
+    "629b59404b8af333798d35a5323f63181010947a6f26d6fba327f67304fbd557": {
       "address": "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
-      "txHash": "0x02dd02efdc9724088f88d85141c221f1a14ccd6a7bbb0573b2c606d968295f7a",
+      "txHash": "0x0a40e86f9c4f4d0e87c7036653b45750e272153950654fd36b1df7bdd2e146ec",
       "layout": {
         "storage": [
           {
@@ -99,51 +99,51 @@
             "contract": "Lottery",
             "label": "feeLottery",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:12"
-          },
-          {
-            "contract": "Lottery",
-            "label": "tickets",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Lottery.sol:13"
+            "src": "contracts\\Lottery.sol:18"
           },
           {
             "contract": "Lottery",
             "label": "randomResult",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:14"
+            "src": "contracts\\Lottery.sol:19"
           },
           {
             "contract": "Lottery",
             "label": "keyHash",
             "type": "t_bytes32",
-            "src": "contracts\\Lottery.sol:15"
+            "src": "contracts\\Lottery.sol:20"
           },
           {
             "contract": "Lottery",
             "label": "fee",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:16"
+            "src": "contracts\\Lottery.sol:21"
           },
           {
             "contract": "Lottery",
             "label": "numberRequest",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:17"
+            "src": "contracts\\Lottery.sol:22"
+          },
+          {
+            "contract": "Lottery",
+            "label": "tickets",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\Lottery.sol:23"
           }
         ],
         "types": {
           "t_uint256": {
             "label": "uint256"
           },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)"
           },
           "t_address": {
             "label": "address"
-          },
-          "t_bytes32": {
-            "label": "bytes32"
           },
           "t_contract(LinkTokenInterface)144": {
             "label": "contract LinkTokenInterface"
