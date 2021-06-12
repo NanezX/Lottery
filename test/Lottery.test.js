@@ -53,21 +53,26 @@ describe("Lottery", function () {
 
         // Passsing LINK to the Lottery
         let tx = await ItokenLINK.connect(ownerLINK).transfer(lottery.address, "10000000000000000000");
-        tx = tx.wait();
+        tx = await tx.wait();
     });
-    it("Testing random number", async ()=>{
+    it("Should return a random number from VRFCoordinator Mock", async ()=>{
         // Requesting the number
         let tx = await lottery.getRandomNumber(234);
-        tx = tx.wait();
+        tx = await tx.wait();
 
         // Getting the requestId
-        eventFilter = await lottery.filters.RequestedRandomness();
+        /*
+        - filters: This get all the events "RequestedRandomness". Can set args to filter by indexeds
+         - queryFilter: Get the event and search the latest. Btw, if the filter is unique (using args indexed),
+         this method can search past events made by this contract 
+        */
+        eventFilter = await lottery.filters.RequestedRandomness(); 
         event = await lottery.queryFilter(eventFilter, "latest");
         requestId = event[0].args.requestId;
 
         // Calling to get the Random
         tx = await VRFCoordinatorMock.callBackWithRandomness(requestId, "777", lottery.address);
-        tx = tx.wait();
+        tx = await tx.wait();
 
         const result = await lottery.randomResult();
         expect(result).to.be.equal(777);
