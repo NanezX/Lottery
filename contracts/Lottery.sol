@@ -15,16 +15,33 @@ import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
 /// @dev This contracts is upgradeable, so is necessary take in count that. The randomness is obtained
 /// by oracles chainlink
 contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
-    uint256 feeLottery;
+    /// @notice Return the randomResult
+    /// @dev randomResult come from Oracle VRF chainlink
     uint256 public randomResult;
+    uint256 feeLottery;
     bytes32 keyHash;
     uint256 fee;
     uint256 numberRequest;
     mapping(address => uint) tickets;
 
+    /// @notice An event that is emitted when a request for a random numer is made
+    /// @return requestId Identificator of the request form the VRF coordinator
+    /// @return numberRequest The number of request made for the contract
     event RequestedRandomness(bytes32 indexed requestId, uint256 indexed numberRequest);
-    event onNewSale(uint);
-    event onNewWinner(address, uint);
+
+    /// @notice The receive eth by default
+    /// @dev Receive will be activated if some ether come to the contracts without or bad calldata 
+    receive() external payable {
+        
+    }
+
+    /// @notice Change the fee on the interest at the lottery
+    /// @dev Must be [0-100]
+    /// @param _feeLottery The fee that the contract get for each interest at the end of the lottery
+    function changeFee(uint _feeLottery) external onlyOwner{
+        require(_feeLottery>=0 && _feeLottery<10000, "ERROR: INVALID_FEE");
+        feeLottery=_feeLottery;
+    }
 
     /// @notice Initialize the contract upgradeable
     /// @dev Here is setting all the features of the contract. Executed just in deploy, have 
@@ -61,14 +78,5 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
 
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
         randomResult = randomness;
-    }
-
-
-    function changeFee(uint _feeLottery) external onlyOwner{
-        require(_feeLottery>=0 && _feeLottery<10000, "ERROR: INVALID_FEE");
-        feeLottery=_feeLottery;
-    }
-    receive() external payable {
-        
     }
 }
