@@ -16,7 +16,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
     uint256 fee;
     uint256 numberRequest;
 
-    event RequestedRandomness(bytes32 requestId, uint256 indexed numberRequest);
+    event RequestedRandomness(bytes32 indexed requestId, uint256 indexed numberRequest);
     event onNewSale(uint);
     event onNewWinner(address, uint);
 

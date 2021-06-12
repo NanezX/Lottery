@@ -15,6 +15,7 @@ const keyHash = "0xAA77729D3466CA35AE8D28B3BBAC7CC36A5031EFDC430821C02BC31A238AF
 
 // Test variables
 let ownerLINK, ItokenLINK, VRFCoordinatorMock, lottery;
+let eventFilter, event, requestId;
 
 describe("Lottery", function () {
     beforeEach(async ()=>{
@@ -60,7 +61,9 @@ describe("Lottery", function () {
         tx = tx.wait();
 
         // Getting the requestId
-        const requestId = (await lottery.filters.RequestedRandomness(null, 0)).topics[0];
+        eventFilter = await lottery.filters.RequestedRandomness();
+        event = await lottery.queryFilter(eventFilter, "latest");
+        requestId = event[0].args.requestId;
 
         // Calling to get the Random
         tx = await VRFCoordinatorMock.callBackWithRandomness(requestId, "777", lottery.address);
@@ -68,6 +71,5 @@ describe("Lottery", function () {
 
         const result = await lottery.randomResult();
         expect(result).to.be.equal(777);
-        console.log(result.toString());
     });
 });
