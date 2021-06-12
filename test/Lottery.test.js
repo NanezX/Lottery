@@ -19,20 +19,6 @@ let eventFilter, event, requestId;
 
 describe("Lottery", function () {
     beforeEach(async ()=>{
-        // Getting hardhat accounts
-        [account1, account2] = await ethers.getSigners();
-
-        await hre.network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [LINK_OWNER]
-        });
-        ownerLINK = await ethers.provider.getSigner(LINK_OWNER);
-        await account2.sendTransaction({
-            to: LINK_OWNER,
-            value: ethers.utils.parseEther('10.0'),
-        });
-        ItokenLINK = await ethers.getContractAt("IERC20Upgradeable", LINK_ADDRESS);
-
         // Deploying mock VRF
         const FactoryVRF = await ethers.getContractFactory("VRFCoordinatorMock");
         VRFCoordinatorMock = await FactoryVRF.deploy(LINK_ADDRESS);
@@ -51,7 +37,30 @@ describe("Lottery", function () {
         );
         await lottery.deployed();
 
+        // Getting hardhat accounts
+        [account1, account2] = await ethers.getSigners();
+
+        // Impersonating account that have a lot of LINK tokens and sending it some ether
+        await hre.network.provider.request({
+            method: "hardhat_impersonateAccount",
+            params: [LINK_OWNER]
+        });
+        ownerLINK = await ethers.provider.getSigner(LINK_OWNER);
+
+        await account2.sendTransaction({
+            to: LINK_OWNER,
+            value: ethers.utils.parseEther('10.0'),
+        });
+
+        // Send ether to the Lottery Contract
+        await account2.sendTransaction({
+            to: lottery.address,
+            value: ethers.utils.parseEther('10.0'),
+        });
+
+
         // Passsing LINK to the Lottery
+        ItokenLINK = await ethers.getContractAt("IERC20Upgradeable", LINK_ADDRESS);
         let tx = await ItokenLINK.connect(ownerLINK).transfer(lottery.address, "10000000000000000000");
         tx = await tx.wait();
     });
