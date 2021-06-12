@@ -7,7 +7,7 @@
       "hash": "0x68a4ef66154cc09e13e69f7e70e6245314d4c1e363130183b9bb92f7601bd441",
       "type": 0,
       "accessList": null,
-      "blockHash": "0xeae73933ffd36f7e3d7e57da45fb50c99ac9ade805fd06765112ca1727bc2c75",
+      "blockHash": "0x96cfe4697240e0a64fc85f589a0e38d81f4048337bcd8a0ade3f7ee0ff74b0ff",
       "blockNumber": 12481133,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -42,9 +42,9 @@
     }
   ],
   "impls": {
-    "0cdbfe203089e04404154a0988b6aad3083a5b53920fedd0bd213152c3553b8f": {
+    "ac5d6d75e33863807a1823fd6d563c3dd84baf8ca8a21b8e30c9ff3f2c5a0937": {
       "address": "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
-      "txHash": "0xfa6b6e521c3b875fce28512c903b0a5875793734c9d243a8818d28a9a04aa11d",
+      "txHash": "0x0803f782e0ec32b818b227015027e48438cc6bfe07069de989d204aa3961a4dd",
       "layout": {
         "storage": [
           {
@@ -97,7 +97,7 @@
           },
           {
             "contract": "Lottery",
-            "label": "randomResult",
+            "label": "lotteryResult",
             "type": "t_uint256",
             "src": "contracts\\Lottery.sol:20"
           },
@@ -130,6 +130,12 @@
             "label": "tickets",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\Lottery.sol:25"
+          },
+          {
+            "contract": "Lottery",
+            "label": "ticketsSelled",
+            "type": "t_uint256",
+            "src": "contracts\\Lottery.sol:26"
           }
         ],
         "types": {

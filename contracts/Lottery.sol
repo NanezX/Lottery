@@ -15,19 +15,26 @@ import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
 /// @dev This contracts is upgradeable, so is necessary take in count that. The randomness is obtained
 /// by oracles chainlink
 contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
-    /// @notice Return the randomResult
-    /// @dev randomResult come from Oracle VRF chainlink
-    uint256 public randomResult;
+    /// @notice Return the lotteryResult
+    /// @dev lotteryResult come from Oracle VRF chainlink
+    uint256 public lotteryResult;
     uint256 feeLottery;
     bytes32 keyHash;
     uint256 fee;
     uint256 numberRequest;
     mapping(address => uint) tickets;
+    uint256 ticketsSelled;
 
     /// @notice An event that is emitted when a request for a random numer is made
     /// @return requestId Identificator of the request form the VRF coordinator
     /// @return numberRequest The number of request made for the contract
     event RequestedRandomness(bytes32 indexed requestId, uint256 indexed numberRequest);
+
+    /// @notice An event that is emitted when a new result is set to the lottery
+    /// @return result The actual result of the lottery
+    /// @return requestId Identificator of the request form the VRF coordinator
+    /// @return time The time when the event was emitted
+    event newResult(uint256 indexed result, bytes32 indexed requestId, uint256 indexed time);
 
     /// @notice The receive eth by default
     /// @dev Receive will be activated if some ether come to the contracts without or bad calldata 
@@ -76,7 +83,10 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
         numberRequest++;
     }
 
+    // Set the result of the lottery. The number is calculated with the random number of the oracle
+    // and the amount of tickets sold
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        randomResult = randomness;
+        lotteryResult = randomness % ticketsSelled;
+        emit newResult(lotteryResult, requestId, block.timestamp);
     }
 }

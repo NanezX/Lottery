@@ -84,7 +84,7 @@ describe("Lottery", function () {
         tx = await VRFCoordinatorMock.callBackWithRandomness(requestId, "777", lottery.address);
         tx = await tx.wait();
 
-        const result = await lottery.randomResult();
-        expect(result).to.be.equal(777);
+        const result = await lottery.lotteryResult();
+        expect(result).to.be.equal(0); // 0 tickets sold so, the module of the random number is 0
     });
 });
