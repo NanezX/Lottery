@@ -1,31 +1,28 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./interfaces/CERC20.sol";
 import "hardhat/console.sol";
 
-contract Lottery is OwnableUpgradeable {
-    uint fee;
+
+contract Lottery is OwnableUpgradeable{
+    uint256 public feeLottery;
     mapping(address => uint) tickets;
-    address public admin;
+    uint256 result;
 
     event onNewSale(uint);
     event onNewWinner(address, uint);
 
-    function initialize(uint256 _fee, address _owner) public initializer {
-        fee = _fee;
-        admin = _admin
-    }
-
-    function buyTicket(uint amount) external {
-
+    function initialize(uint256 _feeLottery) public initializer {
+        feeLottery = _feeLottery;
     }
 
 
-    function changeFee(uint _fee) external onlyOwner{
-        require(_fee>=0 && _fee<10000, "ERROR: INVALID_FEE");
-        fee=_fee;
+
+    function changeFee(uint _feeLottery) external onlyOwner{
+        require(_feeLottery>=0 && _feeLottery<10000, "ERROR: INVALID_FEE");
+        feeLottery=_feeLottery;
     }
 }
