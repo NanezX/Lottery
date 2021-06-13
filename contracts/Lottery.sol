@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.6;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "./interfaces/CERC20.sol";
 import "hardhat/console.sol";
 import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
+import "./upgradeables/ChainlinkClientUpgradeable.sol";
 
 /// @title No loss lottery system in blockchain
 /// @author Hernández, Victor; ...; ...
@@ -14,7 +13,7 @@ import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
 /// go to the winner.
 /// @dev This contracts is upgradeable, so is necessary take in count that. The randomness is obtained
 /// by oracles chainlink
-contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
+contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkClientUpgradeable {
     /// @notice Return the lotteryResult
     /// @dev lotteryResult come from Oracle VRF chainlink
     uint256 public lotteryResult;
@@ -68,6 +67,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
         initializer 
     {
         _init_VRF(_vrfCoordinator, _link);
+        _init_ChainlinkClient();
         feeLottery = _feeLottery;
         keyHash = _keyHash;
         fee = _fee;

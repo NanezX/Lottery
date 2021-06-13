@@ -7,7 +7,7 @@
       "hash": "0x68a4ef66154cc09e13e69f7e70e6245314d4c1e363130183b9bb92f7601bd441",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x5a4415942b84a61372bd0608f8263887bc2acd26d13055acbfec66e413e72183",
+      "blockHash": "0x4c1ad2e8a828db2789cfc4e6eb79369ff68faf9ae0c0a3feafa0cb4def3826d8",
       "blockNumber": 12481133,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -37,27 +37,27 @@
   "proxies": [
     {
       "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
-      "txHash": "0x6ea3a0a2fe2f16548575416c7dc8dd3de9d13d1d3104ff189f6073cab07b2565",
+      "txHash": "0xcf28923cf87182e85abdedd41c7ecb2fa5cee698e85ded8427cf534a909561b0",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "8b10b2c5f41d9f76981064d8b76b385b647fc878778ff396c0770b0480dacac7": {
+    "aea3feeca1503e1ffdb34aba82ece125ebcfa248165ea9ed97eba5947fce6098": {
       "address": "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690",
-      "txHash": "0x5ea5c3cfc502313c68317959fcec8bfa9a99097e1d5b1ad621713861fb9077a2",
+      "txHash": "0x7919e14e3dc96a30ae54c1dbe0d667231a03350834d75e7e002c701bf2ef8ca8",
       "layout": {
         "storage": [
           {
             "contract": "Initializable",
             "label": "_initialized",
             "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:23"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:25"
           },
           {
             "contract": "Initializable",
             "label": "_initializing",
             "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:28"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\Initializable.sol:30"
           },
           {
             "contract": "ContextUpgradeable",
@@ -79,8 +79,8 @@
           },
           {
             "contract": "VRFConsumerBaseUpgradeable",
-            "label": "LINK",
-            "type": "t_contract(LinkTokenInterface)144",
+            "label": "ILINK",
+            "type": "t_contract(LinkTokenInterface)1096",
             "src": "contracts\\upgradeables\\VRFConsumerBaseUpgradeable.sol:34"
           },
           {
@@ -96,46 +96,82 @@
             "src": "contracts\\upgradeables\\VRFConsumerBaseUpgradeable.sol:36"
           },
           {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "ens",
+            "type": "t_contract(ENSInterface)1001",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:29"
+          },
+          {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "ensNode",
+            "type": "t_bytes32",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:30"
+          },
+          {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "link",
+            "type": "t_contract(LinkTokenInterface)1096",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:31"
+          },
+          {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "oracle",
+            "type": "t_contract(ChainlinkRequestInterface)921",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:32"
+          },
+          {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "requestCount",
+            "type": "t_uint256",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:33"
+          },
+          {
+            "contract": "ChainlinkClientUpgradeable",
+            "label": "pendingRequests",
+            "type": "t_mapping(t_bytes32,t_address)",
+            "src": "contracts\\upgradeables\\ChainlinkClientUpgradeable.sol:34"
+          },
+          {
             "contract": "Lottery",
             "label": "lotteryResult",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:20"
+            "src": "contracts\\Lottery.sol:19"
           },
           {
             "contract": "Lottery",
             "label": "feeLottery",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:21"
+            "src": "contracts\\Lottery.sol:20"
           },
           {
             "contract": "Lottery",
             "label": "keyHash",
             "type": "t_bytes32",
-            "src": "contracts\\Lottery.sol:22"
+            "src": "contracts\\Lottery.sol:21"
           },
           {
             "contract": "Lottery",
             "label": "fee",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:23"
+            "src": "contracts\\Lottery.sol:22"
           },
           {
             "contract": "Lottery",
             "label": "numberRequest",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:24"
+            "src": "contracts\\Lottery.sol:23"
           },
           {
             "contract": "Lottery",
             "label": "tickets",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Lottery.sol:25"
+            "src": "contracts\\Lottery.sol:24"
           },
           {
             "contract": "Lottery",
             "label": "ticketsSelled",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:26"
+            "src": "contracts\\Lottery.sol:25"
           }
         ],
         "types": {
@@ -151,8 +187,17 @@
           "t_address": {
             "label": "address"
           },
-          "t_contract(LinkTokenInterface)144": {
+          "t_contract(ENSInterface)1001": {
+            "label": "contract ENSInterface"
+          },
+          "t_contract(LinkTokenInterface)1096": {
             "label": "contract LinkTokenInterface"
+          },
+          "t_contract(ChainlinkRequestInterface)921": {
+            "label": "contract ChainlinkRequestInterface"
+          },
+          "t_mapping(t_bytes32,t_address)": {
+            "label": "mapping(bytes32 => address)"
           },
           "t_mapping(t_bytes32,t_uint256)": {
             "label": "mapping(bytes32 => uint256)"
