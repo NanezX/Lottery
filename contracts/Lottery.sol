@@ -86,7 +86,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
     // Set the result of the lottery. The number is calculated with the random number of the oracle
     // and the amount of tickets sold
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        lotteryResult = randomness % ticketsSelled;
+        lotteryResult = randomness % (ticketsSelled + 1);
         emit newResult(lotteryResult, requestId, block.timestamp);
     }
 }
