@@ -97,7 +97,6 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
         oraclePayment = _fee;
         oracle = _oracle; 
         jobId = "5348c2c08d03431a8872078bee96c6de";
-
     }
 
     // ---------------- VRF

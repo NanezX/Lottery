@@ -6,10 +6,10 @@ const { latestBlock } = require("@openzeppelin/test-helpers/src/time");
 
 // TOKEN ADDRESSES
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const USDC_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
-let USDT_ADDRESS;
-let TUSD_ADDRESS;
-let BUSD_ADDRESS;
+const USDT_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const TUSD_ADDRESS = "0x0000000000085d4780B73119b644AE5ecd22b376";
+const BUSD_ADDRESS = "0x4fabb145d64652a948d72533023f6e7a623c7c53";
 
 // LINK TOKENT
 const LINK_ADDRESS = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
@@ -77,8 +77,7 @@ describe("Lottery", function () {
         tx = await tx.wait();
     });
     it("Should change the lottery State", async ()=>{
-        // tx = await lottery.start();
-        // tx = await tx.wait();
+        
     });
 });
 
