@@ -17,6 +17,9 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
 
     uint256 lotteryCounter;
     mapping(address => uint) tickets;
+    struct Ticket {
+        address owner;
+    }
     uint256 ticketsSold;
 
     /// @notice Return the lotteryResult
@@ -116,6 +119,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
 
     // ---------------- Chainlink client
     function start() external onlyOwner {
+        require(lotteryCounter == 0 && lotteryState == State.Selling);
         bytes32 reqId = _chainLinkRequest(this.closeBuy.selector, 2 days);
         lotteryState = State.Selling;
         emit NewStart(reqId, lotteryCounter);
@@ -139,10 +143,5 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
         req.addUint("until", block.timestamp + _time);
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, oraclePayment);
         return reqId;
-    }
-
-    modifier onlyInit () {
-        require(msg.sender == oracle, "ERROR: DO NOT HAVE PERMISSION");
-        _;
     }
 }
