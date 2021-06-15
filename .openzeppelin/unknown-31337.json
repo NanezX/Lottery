@@ -7,7 +7,7 @@
       "hash": "0x32dc35c598f3179c43b1d8bcf0969ba343a8bedffb6252f0b722fdd3b6255798",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x09af0e7c1085d3ec897bea994e6a3d7a8ef272718354f294c83cba71620f90bc",
+      "blockHash": "0x19d2a10a5245dc9caad28172ec1c9a88e2b5ac6ace727d6116a213e1ac7b0224",
       "blockNumber": 12481134,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -57,14 +57,14 @@
     },
     {
       "address": "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
-      "txHash": "0x05f80d08c69c2e7ba28da88373c6efb8488d40e458225efd2a83e2f04638ab4c",
+      "txHash": "0x8a44a4bd2dc07dc17fe009f4b26b70f4b59a2e6556bee4163c29ac43e0383f0b",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "e490be4569d139972a62a35eb4546f006077378f51b8662d5e345a06c7174acd": {
+    "1f39b94da9aa92d8d42212b72138494703aa2181d71364537e8510c046a23e37": {
       "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
-      "txHash": "0x71b7533b11267a48d4683a98ff3c85ea54dc7085801dcba64198f7fd1c768599",
+      "txHash": "0x8ff267db0534b69a771baaa48aff817a7226a0ad02dc63411a2cb952baceee68",
       "layout": {
         "storage": [
           {
@@ -177,44 +177,44 @@
           },
           {
             "contract": "Lottery",
+            "label": "lotteryState",
+            "type": "t_enum(State)3379",
+            "src": "contracts\\Lottery.sol:30"
+          },
+          {
+            "contract": "Lottery",
             "label": "feeLottery",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:30"
+            "src": "contracts\\Lottery.sol:33"
           },
           {
             "contract": "Lottery",
             "label": "keyHash",
             "type": "t_bytes32",
-            "src": "contracts\\Lottery.sol:31"
+            "src": "contracts\\Lottery.sol:34"
           },
           {
             "contract": "Lottery",
             "label": "fee",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:32"
+            "src": "contracts\\Lottery.sol:35"
           },
           {
             "contract": "Lottery",
             "label": "oraclePayment",
             "type": "t_uint256",
-            "src": "contracts\\Lottery.sol:35"
+            "src": "contracts\\Lottery.sol:38"
           },
           {
             "contract": "Lottery",
             "label": "oracle",
             "type": "t_address",
-            "src": "contracts\\Lottery.sol:36"
+            "src": "contracts\\Lottery.sol:39"
           },
           {
             "contract": "Lottery",
             "label": "jobId",
             "type": "t_bytes32",
-            "src": "contracts\\Lottery.sol:37"
-          },
-          {
-            "contract": "Lottery",
-            "label": "lotteryState",
-            "type": "t_enum(State)3391",
             "src": "contracts\\Lottery.sol:40"
           }
         ],
@@ -228,15 +228,15 @@
           "t_address": {
             "label": "address"
           },
-          "t_bytes32": {
-            "label": "bytes32"
-          },
-          "t_enum(State)3391": {
+          "t_enum(State)3379": {
             "label": "enum Lottery.State",
             "members": [
               "Selling",
               "Collecting"
             ]
+          },
+          "t_bytes32": {
+            "label": "bytes32"
           },
           "t_contract(ENSInterface)1108": {
             "label": "contract ENSInterface"

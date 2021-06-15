@@ -20,17 +20,32 @@ const TUSD_OWNER = "0x3ddfa8ec3052539b6c9549f12cea2c295cff5296";
 const BUSD_OWNER = "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503";
 const LINK_OWNER = "0x98c63b7b319dfbdf3d811530f2ab9dfe4983af9d";
 
-const keyHash = "0xAA77729D3466CA35AE8D28B3BBAC7CC36A5031EFDC430821C02BC31A238AF445";
 
 // Test variables
-let ownerLINK, ItokenLINK, VRFCoordinatorMock, mockOracle, lottery;
-let eventFilter, event, requestId, tx;
 const data = "0x0000000000000000000000000000000000000000000000000000000000000000";
+const keyHash = "0xAA77729D3466CA35AE8D28B3BBAC7CC36A5031EFDC430821C02BC31A238AF445";
+
+let VRFCoordinatorMock, mockOracle, lottery;
+let eventFilter, event, requestId, tx;
+
+// Tokens variables
+let ItokenLINK, ItokenDAI, ItokenUSDT, ItokenUSDC, ItokenTUSD, ItokenBUSD;
+let ownerLINK, ownerDAI, ownerUSDT, ownerUSDC, ownerTUSD, ownerBUSD;
+
+// Compound
+// const COMP = "0xc00e94cb662c3520282e6f5717214004a7f26888";
+// const Comptroller = "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b";
+// const cDAI = "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643";
+// const cETH = "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5";
+// const cTUSD = "0x12392f67bdf24fae0af363c24ac620a2f67dad86";
+// const cUSDC = "0x39aa39c021dfbae8fac545936693ac917d5e7563";
+// const cUSDT = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9";
+// const cUSDT = "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9";
 
 describe("Lottery", function () {
     beforeEach(async ()=>{
         // Getting hardhat accounts
-        [account1, account2] = await ethers.getSigners();
+        [account1, account2, account3] = await ethers.getSigners();
         
         // Deploying mock VRF
         const FactoryVRF = await ethers.getContractFactory("VRFCoordinatorMock");
@@ -57,7 +72,6 @@ describe("Lottery", function () {
         );
         await lottery.deployed();
 
-
         // Impersonating account that have a lot of LINK tokens and sending it some ether
         await hre.network.provider.request({
             method: "hardhat_impersonateAccount",
@@ -82,7 +96,7 @@ describe("Lottery", function () {
         tx = await tx.wait();
     });
     it("Should change the lottery State", async ()=>{
-        
+
     });
 });
 
