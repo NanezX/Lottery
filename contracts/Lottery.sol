@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.6;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "./interfaces/CERC20.sol";
 import "hardhat/console.sol";
 import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
+import "./upgradeables/ChainlinkClientUpgradeable.sol";
 
 /// @title No loss lottery system in blockchain
 /// @author Hernández, Victor; ...; ...
@@ -14,27 +13,43 @@ import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
 /// go to the winner.
 /// @dev This contracts is upgradeable, so is necessary take in count that. The randomness is obtained
 /// by oracles chainlink
-contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
+contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkClientUpgradeable {
+
+    uint256 lotteryCounter;
+    mapping(address => uint) tickets;
+    struct Ticket {
+        address owner;
+    }
+    uint256 ticketsSold;
+
     /// @notice Return the lotteryResult
     /// @dev lotteryResult come from Oracle VRF chainlink
     uint256 public lotteryResult;
+
+    enum State { Selling, Collecting }
+    State public lotteryState;
+    
+    // VRF
     uint256 feeLottery;
     bytes32 keyHash;
     uint256 fee;
-    uint256 numberRequest;
-    mapping(address => uint) tickets;
-    uint256 ticketsSelled;
+
+    // Chainlink client
+    uint256 private oraclePayment;
+    address private oracle;
+    bytes32 private jobId;
 
     /// @notice An event that is emitted when a request for a random numer is made
-    /// @return requestId Identificator of the request form the VRF coordinator
-    /// @return numberRequest The number of request made for the contract
-    event RequestedRandomness(bytes32 indexed requestId, uint256 indexed numberRequest);
+    event RequestedRandomness(bytes32 indexed requestId, uint256 indexed lotteryCounter);
 
-    /// @notice An event that is emitted when a new result is set to the lottery
-    /// @return result The actual result of the lottery
-    /// @return requestId Identificator of the request form the VRF coordinator
-    /// @return time The time when the event was emitted
-    event newResult(uint256 indexed result, bytes32 indexed requestId, uint256 indexed time);
+    /// @notice Event that is emitted when a new lottery start
+    event NewStart(bytes32 indexed reqId, uint256 indexed lotteryCounter);
+
+    /// @notice Event that is emitted when a lottey has been finished
+    event buyClosed(bytes32 indexed reqId, uint256 indexed lotteryCounter, uint256 ticketsSold);
+
+    /// @notice An event that is emitted when to 
+    event NumberWinner(uint256 indexed result, bytes32 indexed requestId, uint256 indexed lotteryCounter);
 
     /// @notice The receive eth by default
     /// @dev Receive will be activated if some ether come to the contracts without or bad calldata 
@@ -43,7 +58,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
     }
 
     /// @notice Change the fee on the interest at the lottery
-    /// @dev Must be [0-100]
+    /// @dev Must be [0-10000]
     /// @param _feeLottery The fee that the contract get for each interest at the end of the lottery
     function changeFee(uint _feeLottery) external onlyOwner{
         require(_feeLottery>=0 && _feeLottery<10000, "ERROR: INVALID_FEE");
@@ -63,30 +78,69 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable{
         address _vrfCoordinator,
         address _link,
         bytes32 _keyHash,
-        uint _fee) 
+        uint _fee,
+        address _oracle) 
         public 
         initializer 
     {
+        __Ownable_init();
+        // VRF
         _init_VRF(_vrfCoordinator, _link);
         feeLottery = _feeLottery;
         keyHash = _keyHash;
         fee = _fee;
+
+        // Chainlink client
+        _init_ChainlinkClient();
+        // Oracle
+        setChainlinkToken(_link);
+        oraclePayment = _fee;
+        oracle = _oracle; 
+        jobId = "5348c2c08d03431a8872078bee96c6de";
     }
 
+    // ---------------- VRF
     /// @notice Request a random number
     /// @dev The id is useful to track a correct request when is solicited a lot of this request
     /// @param userProvidedSeed A seed or number provide by the user
     /// @return requestId The ID of the request to track and get with the VRF
     function getRandomNumber(uint256 userProvidedSeed) public returns (bytes32 requestId) {
         requestId = requestRandomness(keyHash, fee, userProvidedSeed);
-        emit RequestedRandomness(requestId, numberRequest);
-        numberRequest++;
+        emit RequestedRandomness(requestId, lotteryCounter);
     }
 
-    // Set the result of the lottery. The number is calculated with the random number of the oracle
-    // and the amount of tickets sold
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-        lotteryResult = randomness % (ticketsSelled + 1);
-        emit newResult(lotteryResult, requestId, block.timestamp);
+        // lotteryResult = randomness % (ticketsSold + 1); Uncomment this when set the right lottery system
+        lotteryResult = randomness;
+        emit NumberWinner(lotteryResult, requestId, lotteryCounter);
+        lotteryCounter++;
+    }
+
+    // ---------------- Chainlink client
+    function start() external onlyOwner {
+        require(lotteryCounter == 0 && lotteryState == State.Selling);
+        bytes32 reqId = _chainLinkRequest(this.closeBuy.selector, 2 days);
+        lotteryState = State.Selling;
+        emit NewStart(reqId, lotteryCounter);
+    }
+
+    function newStart(bytes32 _requestId) public recordChainlinkFulfillment(_requestId){
+        bytes32 reqId = _chainLinkRequest(this.closeBuy.selector, 2 days);
+        lotteryState = State.Selling;
+        emit NewStart(reqId, lotteryCounter);
+    }
+
+    function closeBuy(bytes32 _requestId) public recordChainlinkFulfillment(_requestId) {
+        getRandomNumber(lotteryCounter);
+        lotteryState = State.Collecting;
+        bytes32 reqId = _chainLinkRequest(this.newStart.selector, 5 days);
+        emit buyClosed(reqId, lotteryCounter, ticketsSold);
+    }
+
+    function _chainLinkRequest(bytes4 _selector, uint256 _time) internal returns(bytes32){
+        Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), _selector);
+        req.addUint("until", block.timestamp + _time);
+        bytes32 reqId = sendChainlinkRequestTo(oracle, req, oraclePayment);
+        return reqId;
     }
 }

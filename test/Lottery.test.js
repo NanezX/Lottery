@@ -1,28 +1,46 @@
-const { ethers, upgrades } = require("hardhat");
+const { ethers, upgrades, network } = require("hardhat");
 const { expect } = require("chai");
+const hre = require("hardhat");
+const {time} = require("@openzeppelin/test-helpers");
+const { latestBlock } = require("@openzeppelin/test-helpers/src/time");
+
 // TOKEN ADDRESSES
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const USDC_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
-let USDT_ADDRESS;
-let TUSD_ADDRESS;
-let BUSD_ADDRESS;
-
-// LINK TOKENT
+const USDT_ADDRESS = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const USDC_ADDRESS = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const TUSD_ADDRESS = "0x0000000000085d4780B73119b644AE5ecd22b376";
+const BUSD_ADDRESS = "0x4fabb145d64652a948d72533023f6e7a623c7c53";
 const LINK_ADDRESS = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
+
+// TOKEN OWNERS
+const DAI_OWNER = "0x16463c0fdb6ba9618909f5b120ea1581618c1b9e";
+const USDT_OWNER = "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503";
+const USDC_OWNER = "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503";
+const TUSD_OWNER = "0x3ddfa8ec3052539b6c9549f12cea2c295cff5296";
+const BUSD_OWNER = "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503";
 const LINK_OWNER = "0x98c63b7b319dfbdf3d811530f2ab9dfe4983af9d";
 
 const keyHash = "0xAA77729D3466CA35AE8D28B3BBAC7CC36A5031EFDC430821C02BC31A238AF445";
 
 // Test variables
-let ownerLINK, ItokenLINK, VRFCoordinatorMock, lottery;
-let eventFilter, event, requestId;
+let ownerLINK, ItokenLINK, VRFCoordinatorMock, mockOracle, lottery;
+let eventFilter, event, requestId, tx;
+const data = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 describe("Lottery", function () {
     beforeEach(async ()=>{
+        // Getting hardhat accounts
+        [account1, account2] = await ethers.getSigners();
+        
         // Deploying mock VRF
         const FactoryVRF = await ethers.getContractFactory("VRFCoordinatorMock");
         VRFCoordinatorMock = await FactoryVRF.deploy(LINK_ADDRESS);
         VRFCoordinatorMock.deployed();
+
+        // Deploying mock Oracle
+        const MockOracle = await ethers.getContractFactory("MockOracle");
+        mockOracle = await MockOracle.deploy(LINK_ADDRESS);
+        mockOracle.deployed();
 
         // Deploying Lottery upgradeable
         const Lottery = await ethers.getContractFactory("Lottery");
@@ -33,13 +51,12 @@ describe("Lottery", function () {
                 VRFCoordinatorMock.address,
                 LINK_ADDRESS,
                 keyHash,
-                ethers.utils.parseEther('0.1')
+                ethers.utils.parseEther('0.1'),
+                mockOracle.address
             ]
         );
         await lottery.deployed();
 
-        // Getting hardhat accounts
-        [account1, account2] = await ethers.getSigners();
 
         // Impersonating account that have a lot of LINK tokens and sending it some ether
         await hre.network.provider.request({
@@ -50,41 +67,42 @@ describe("Lottery", function () {
 
         await account2.sendTransaction({
             to: LINK_OWNER,
-            value: ethers.utils.parseEther('10.0'),
+            value: ethers.utils.parseEther('5.0'),
         });
 
         // Send ether to the Lottery Contract
         await account2.sendTransaction({
             to: lottery.address,
-            value: ethers.utils.parseEther('10.0'),
+            value: ethers.utils.parseEther('5.0'),
         });
-
 
         // Passsing LINK to the Lottery
         ItokenLINK = await ethers.getContractAt("IERC20Upgradeable", LINK_ADDRESS);
         let tx = await ItokenLINK.connect(ownerLINK).transfer(lottery.address, "10000000000000000000");
         tx = await tx.wait();
     });
-    it("Should return a random number from VRFCoordinator Mock", async ()=>{
-        // Requesting the number
-        let tx = await lottery.getRandomNumber(234);
-        tx = await tx.wait();
+    it("Should change the lottery State", async ()=>{
+        
+    });
+});
 
-        // Getting the requestId
-        /*
-        - filters: This get all the events "RequestedRandomness". Can set args to filter by indexeds
-         - queryFilter: Get the event and search the latest. Btw, if the filter is unique (using args indexed),
-         this method can search past events made by this contract 
-        */
+/*      //Increase time
+        await hre.network.provider.send("evm_increaseTime", [
+            Number(time.duration.minutes(10)),
+        ]);
+        // Mine
+        await hre.network.provider.send("evm_mine");
+
+        Filter an event
         eventFilter = await lottery.filters.RequestedRandomness(); 
         event = await lottery.queryFilter(eventFilter, "latest");
         requestId = event[0].args.requestId;
 
-        // Calling to get the Random
-        tx = await VRFCoordinatorMock.callBackWithRandomness(requestId, "777", lottery.address);
+        Make a response of VRF
+        tx = await VRFCoordinatorMock.callBackWithRandomness(requestId, "666", lottery.address);
         tx = await tx.wait();
 
-        const result = await lottery.lotteryResult();
-        expect(result).to.be.equal(0); // 0 tickets sold so, the module of the random number is 0
-    });
-});
+        Make a response of Oracle to Alarm Clock
+        tx = await mockOracle.fulfillOracleRequest(requestId, data);
+        tx = await tx.wait();
+*/

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.6.0;
 
-import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
-import "@chainlink/contracts/src/v0.8/dev/VRFRequestIDBase.sol";
+import "@chainlink/contracts/src/v0.6/interfaces/LinkTokenInterface.sol";
+import "@chainlink/contracts/src/v0.6/VRFRequestIDBase.sol";
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 
 abstract contract VRFConsumerBaseUpgradeable is VRFRequestIDBase, Initializable {
 
@@ -25,13 +25,13 @@ abstract contract VRFConsumerBaseUpgradeable is VRFRequestIDBase, Initializable 
       bytes32 requestId
     )
   {
-    LINK.transferAndCall(vrfCoordinator, _fee, abi.encode(_keyHash, _seed));
+    ILINK.transferAndCall(vrfCoordinator, _fee, abi.encode(_keyHash, _seed));
     uint256 vRFSeed  = makeVRFInputSeed(_keyHash, _seed, address(this), nonces[_keyHash]);
     nonces[_keyHash] = nonces[_keyHash] + 1;
     return makeRequestId(_keyHash, vRFSeed);
   }
 
-  LinkTokenInterface internal LINK;
+  LinkTokenInterface internal ILINK;
   address private vrfCoordinator;
   mapping(bytes32 /* keyHash */ => uint256 /* nonce */) private nonces;
 
@@ -42,7 +42,7 @@ abstract contract VRFConsumerBaseUpgradeable is VRFRequestIDBase, Initializable 
       initializer
   {
     vrfCoordinator = _vrfCoordinator;
-    LINK = LinkTokenInterface(_link);
+    ILINK = LinkTokenInterface(_link);
   }
 
   function rawFulfillRandomness(
