@@ -81,10 +81,11 @@ describe("Lottery", function () {
     });
 });
 
-/*      Increase time
+/*      //Increase time
         await hre.network.provider.send("evm_increaseTime", [
             Number(time.duration.minutes(10)),
         ]);
+        // Mine
         await hre.network.provider.send("evm_mine");
 
         Filter an event

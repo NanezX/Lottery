@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.6.6;
+
 interface CErc20 {
     function mint(uint256) external returns (uint256);
 
