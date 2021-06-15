@@ -26,6 +26,9 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
     /// @dev lotteryResult come from Oracle VRF chainlink
     uint256 public lotteryResult;
 
+    enum State { Selling, Collecting }
+    State public lotteryState;
+    
     // VRF
     uint256 feeLottery;
     bytes32 keyHash;
@@ -35,9 +38,6 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
     uint256 private oraclePayment;
     address private oracle;
     bytes32 private jobId;
-
-    enum State { Selling, Collecting }
-    State public lotteryState;
 
     /// @notice An event that is emitted when a request for a random numer is made
     event RequestedRandomness(bytes32 indexed requestId, uint256 indexed lotteryCounter);
