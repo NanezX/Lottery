@@ -4,7 +4,6 @@ async function main() {
     
     const admin = "0xbF334f8BD1420a1CbFE15407f73919424934B1B3";
     
-    // Passsing LINK to the Lottery
     const ItokenLINK = await ethers.getContractAt("IERC20Upgradeable", LINK_ADDRESS);
     const balance= await ItokenLINK.balanceOf(LINK_OWNER);
     console.log(balance.toString());

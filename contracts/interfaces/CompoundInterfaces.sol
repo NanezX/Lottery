@@ -11,6 +11,10 @@ interface CErc20 {
     function redeem(uint) external returns (uint);
 
     function redeemUnderlying(uint) external returns (uint);
+
+    function balanceOfUnderlying(address account) external returns (uint);
+    
+    function balanceOf(address account) external returns (uint);
 }
 
 
@@ -24,4 +28,8 @@ interface CEth {
     function redeem(uint) external returns (uint);
 
     function redeemUnderlying(uint) external returns (uint);
+
+    function balanceOfUnderlying(address account) external returns (uint);
+
+    function balanceOf(address account) external returns (uint);
 }

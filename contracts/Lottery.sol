@@ -2,9 +2,13 @@
 pragma solidity ^0.6.6;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "hardhat/console.sol";
 import "./upgradeables/VRFConsumerBaseUpgradeable.sol";
 import "./upgradeables/ChainlinkClientUpgradeable.sol";
+import "./interfaces/CompoundInterfaces.sol";
+import "./interfaces/IERC20.sol";
+import "hardhat/console.sol";
+
+import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 
 /// @title No loss lottery system in blockchain
 /// @author Hernández, Victor; ...; ...
@@ -14,11 +18,12 @@ import "./upgradeables/ChainlinkClientUpgradeable.sol";
 /// @dev This contracts is upgradeable, so is necessary take in count that. The randomness is obtained
 /// by oracles chainlink
 contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkClientUpgradeable {
-
+    uint256 priceTicket;
     uint256 lotteryCounter;
     mapping(address => uint) tickets;
     struct Ticket {
         address owner;
+        uint256 lotteryId;
     }
     uint256 ticketsSold;
 
@@ -75,6 +80,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
     /// @param _fee The fee used by the Oracle
     function initialize(
         uint _feeLottery,
+        uint _pricePerTicket,
         address _vrfCoordinator,
         address _link,
         bytes32 _keyHash,
@@ -84,19 +90,25 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
         initializer 
     {
         __Ownable_init();
+        priceTicket = _pricePerTicket; // 2$
         // VRF
         _init_VRF(_vrfCoordinator, _link);
         feeLottery = _feeLottery;
         keyHash = _keyHash;
         fee = _fee;
 
-        // Chainlink client
+        // Chainlink
         _init_ChainlinkClient();
         // Oracle
         setChainlinkToken(_link);
         oraclePayment = _fee;
         oracle = _oracle; 
         jobId = "5348c2c08d03431a8872078bee96c6de";
+        // Aggregator
+        __init_aggregator();
+
+        // Compound 
+        __init_compound();
     }
 
     // ---------------- VRF
@@ -116,7 +128,7 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
         lotteryCounter++;
     }
 
-    // ---------------- Chainlink client
+    // ---------------- Chainlink
     function start() external onlyOwner {
         require(lotteryCounter == 0 && lotteryState == State.Selling);
         bytes32 reqId = _chainLinkRequest(this.closeBuy.selector, 2 days);
@@ -142,5 +154,97 @@ contract Lottery is OwnableUpgradeable, VRFConsumerBaseUpgradeable, ChainlinkCli
         req.addUint("until", block.timestamp + _time);
         bytes32 reqId = sendChainlinkRequestTo(oracle, req, oraclePayment);
         return reqId;
+    }
+
+    AggregatorV3Interface AggregatorETH;
+    function __init_aggregator() public initializer {
+        AggregatorETH = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+    }
+
+    // Compound
+    address[5] cTokens;
+
+    function __init_compound() public initializer {
+        cTokens[0] = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5; // cETH
+        cTokens[1] = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643; // cDAI
+        cTokens[2] = 0x12392F67bdf24faE0AF363c24aC620a2f67DAd86; // cTUSD
+        cTokens[3] = 0x39AA39c021dfbaE8faC545936693aC917d5E7563; // cUSDC
+        cTokens[4] = 0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9; // cUSDT
+    }
+
+    function _setTicket(address buyer, uint amountTickets) internal {
+        require(lotteryState == State.Selling, "Lottery running, must be wait");
+    }
+    
+
+    function buyTickets(uint amountTickets, address tokenPayment, uint paymentType) public payable{
+        require(paymentType >= 0 && paymentType <= 4, "ERROR: INVALID PAYMENT TYPE");
+        if (paymentType == 0) {
+            // Ether
+            uint256 valueTickets = getPriceToTickets(amountTickets);
+            require(msg.value >= valueTickets, "Not enough Ether to pay the amount of tickets");
+            _supplyEthToCompound(cTokens[paymentType]);
+        } else {
+            // Tokens
+            IERC20 Itoken = IERC20(tokenPayment);
+            uint decimals = Itoken.decimals();
+            uint valueTickets = amountTickets * priceTicket * 10**decimals;
+            require(
+                Itoken.allowance(msg.sender, address(this)) >= valueTickets,
+                 "Not enough tokens to pay the amount of tickets"
+            );
+            Itoken.transferFrom(msg.sender, address(this), valueTickets);
+            _supplyErc20ToCompound(Itoken, cTokens[paymentType], valueTickets);
+        }
+    }
+
+    function getPriceToTickets(uint amountTickets) public view returns (uint){
+        (, int price,,,) = AggregatorETH.latestRoundData();
+        require(price > 0);
+        return ((amountTickets * priceTicket * (10**8)) *  (10**18)) / uint(price);
+    }
+
+    function _supplyEthToCompound(address _cEthContract) internal {
+        CEth cToken = CEth(_cEthContract);
+        cToken.mint.value(msg.value).gas(250000)();
+        console.log("Balance n:", cToken.balanceOf(address(this)));
+        console.log("Balance Under:", cToken.balanceOfUnderlying(address(this)));
+    }
+
+    function _supplyErc20ToCompound(
+        IERC20 _token,
+        address _cErc20Contract,
+        uint256 _amountTokensToSupply
+    ) internal {
+        CErc20 cToken = CErc20(_cErc20Contract);
+        _token.approve(_cErc20Contract, _amountTokensToSupply);
+        require(
+            cToken.mint(_amountTokensToSupply) == 0,
+             "Mint Result: ERROR"
+        );
+    }
+
+    function redeemCErc20Tokens(uint256 _numToken) public {
+        CErc20 cToken = CErc20(cTokens[_numToken]);
+        uint256 amount = cToken.balanceOf(address(this));
+        require(
+            cToken.redeem(amount) == 0,
+             "Redeem Result: ERROR"
+        );
+    }
+
+   function redeemCEth() public {
+        // Create a reference to the corresponding cToken contract
+        CEth cToken = CEth(cTokens[0]);
+        uint256 amount = cToken.balanceOf(address(this));
+        console.log("Before redeem n: ", amount);
+        console.log("Before redeem u: ", cToken.balanceOfUnderlying(address(this)));
+        require(
+            cToken.redeem(amount) == 0,
+             "Redeem Result: ERROR"
+        );
+        console.log("After redeem n : ", cToken.balanceOf(address(this)));
+        console.log("After redeem u : ", cToken.balanceOfUnderlying(address(this)));
+
     }
 }
